@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
+    <title>NeoSync // Вход / Регистрация</title>
+    
+    <!-- Tailwind + Iconify -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <style>
+        /* -------------------- ШРИФТЫ -------------------- */
+        @import url('https://fonts.googleapis.com/css2?family=Nippo:wght@400;500;700&family=Satoshi:wght@400;500;700&display=swap');
+
+        /* -------------------- ПЕРЕМЕННЫЕ (светлая тема по умолчанию) -------------------- */
+        :root {
+            --neon-pink: #FF006E;
+            --neon-purple: #7B2FDA;
+            --bg-primary: #F5F5F7;
+            --text-primary: #1A1A1A;
+            --card-bg: rgba(255,255,255,0.95);
+            --border-light: rgba(0,0,0,0.1);
+            --particle-color: rgba(0,0,0,0.03);
+            --scanline-color: rgba(123,47,218,0.03);
+            --input-bg: rgba(255,255,255,0.9);
+            --text-muted: rgba(0,0,0,0.6);
+            --glow-opacity: 0.3;
+        }
+
+        /* -------------------- ТЕМНАЯ ТЕМА -------------------- */
+        body.dark-theme {
+            --neon-pink: #FF006E;
+            --neon-purple: #AA00FF;
+            --bg-primary: #050505;
+            --text-primary: #FFFFFF;
+            --card-bg: rgba(15,15,15,0.95);
+            --border-light: rgba(255,255,255,0.1);
+            --particle-color: rgba(255,255,255,0.03);
+            --scanline-color: rgba(170,0,255,0.04);
+            --input-bg: rgba(20,20,20,0.9);
+            --text-muted: rgba(255,255,255,0.6);
+            --glow-opacity: 0.6;
+        }
+
+        /* -------------------- БАЗОВЫЕ СТИЛИ -------------------- */
+        .font-display { font-family: 'Nippo', sans-serif; }
+        .font-body { font-family: 'Satoshi', sans-serif; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Satoshi', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        /* -------------------- ЧАСТИЦЫ -------------------- */
+        .bg-particles {
+            background-image: radial-gradient(circle, var(--particle-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        /* -------------------- СКАНИРУЮЩАЯ ЛИНИЯ -------------------- */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--scanline-color) 50%, transparent);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            animation: scanline-scroll 10s linear infinite;
+        }
+        @keyframes scanline-scroll {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* -------------------- ЭФФЕКТЫ СВЕЧЕНИЯ -------------------- */
+        .glow-purple {
+            filter: drop-shadow(0 0 12px color-mix(in srgb, var(--neon-purple) calc(var(--glow-opacity)*100%), transparent));
+        }
+        .glow-pink {
+            filter: drop-shadow(0 0 12px color-mix(in srgb, var(--neon-pink) calc(var(--glow-opacity)*100%), transparent));
+        }
+
+        .text-glow-purple {
+            text-shadow: 0 0 15px color-mix(in srgb, var(--neon-purple) 50%, transparent), 0 0 30px color-mix(in srgb, var(--neon-purple) 30%, transparent);
+        }
+        .text-glow-pink {
+            text-shadow: 0 0 15px color-mix(in srgb, var(--neon-pink) 50%, transparent), 0 0 30px color-mix(in srgb, var(--neon-pink) 30%, transparent);
+        }
+
+        /* -------------------- СВЕЧЕНИЕ ГРАНИЦ -------------------- */
+        .border-glow-purple {
+            border: 1px solid var(--neon-purple);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--neon-purple) 40%, transparent), inset 0 0 10px color-mix(in srgb, var(--neon-purple) 15%, transparent);
+        }
+        .border-glow-pink {
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--neon-pink) 40%, transparent), inset 0 0 10px color-mix(in srgb, var(--neon-pink) 15%, transparent);
+        }
+
+        /* -------------------- КЛЮЧЕВЫЕ КАДРЫ -------------------- */
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-rotate-slow { animation: rotate-slow 20s linear infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0,0); }
+            50% { transform: translate(-10px,-20px); }
+        }
+        .animate-float { animation: float 8s ease-in-out infinite; }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.4; filter: blur(0px); }
+            50% { transform: scale(1.1); opacity: 0.7; filter: blur(4px); }
+            100% { transform: scale(1); opacity: 0.4; filter: blur(0px); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        /* -------------------- КАРТОЧКИ -------------------- */
+        .auth-card {
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            width: 100%;
+        }
+        .auth-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .dark-theme .auth-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        /* -------------------- СТИЛИ ДЛЯ ПОЛЕЙ ВВОДА -------------------- */
+        .auth-input {
+            background: var(--input-bg);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-family: 'Satoshi', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px color-mix(in srgb, var(--neon-purple) 30%, transparent);
+        }
+        .auth-input::placeholder {
+            color: var(--text-muted);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* -------------------- КНОПКА GOOGLE -------------------- */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-family: 'Satoshi', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .google-btn:hover {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--neon-purple) 30%, transparent);
+            transform: translateY(-2px);
+        }
+
+        /* -------------------- ПЕРЕКЛЮЧАТЕЛЬ ТЕМ -------------------- */
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: rgba(123,47,218,0.1);
+            border: 1px solid var(--neon-purple);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            z-index: 200;
+        }
+        .theme-switch:hover {
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+        .theme-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .dark-theme .theme-switch::before {
+            transform: translateX(30px);
+        }
+        .theme-switch .iconify-icon {
+            position: absolute;
+            top: 5px;
+            font-size: 18px;
+            transition: opacity 0.3s ease;
+        }
+        .theme-switch .light-icon {
+            right: 8px;
+            color: #FFD700;
+            opacity: 1;
+        }
+        .theme-switch .dark-icon {
+            left: 8px;
+            color: #FFFFFF;
+            opacity: 0.3;
+        }
+        .dark-theme .theme-switch .light-icon {
+            opacity: 0.3;
+        }
+        .dark-theme .theme-switch .dark-icon {
+            opacity: 1;
+        }
+
+        /* -------------------- ОСНОВНОЙ КОНТЕЙНЕР -------------------- */
+        .main-container {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 45fr 55fr;
+            gap: 4rem;
+            overflow: hidden;
+        }
+
+        /* Левая панель с обложкой */
+        .left-panel {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 2rem;
+            padding-right: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .cover-title {
+            font-family: 'Nippo', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-subtitle {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-bottom: 2rem;
+        }
+
+        .cover-description {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+        }
+
+        /* Правая панель с формой */
+        .right-panel {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem;
+            padding-left: 1rem;
+            overflow-y: auto;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 0.5rem;
+            }
+            .left-panel {
+                display: none;
+            }
+            .right-panel {
+                padding: 1rem;
+            }
+            .auth-card {
+                padding: 1.5rem !important;
+            }
+            .theme-switch {
+                width: 50px;
+                height: 25px;
+                top: 10px;
+                right: 10px;
+            }
+            .theme-switch::before {
+                width: 19px;
+                height: 19px;
+            }
+            .dark-theme .theme-switch::before {
+                transform: translateX(25px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="h-screen w-screen relative overflow-hidden bg-particles">
+    
+    <!-- Сканирующая линия -->
+    <div class="scanline"></div>
+
+    <!-- Переключатель темы -->
+    <div class="theme-switch" id="themeToggle">
+        <iconify-icon icon="lucide:moon" class="iconify-icon dark-icon"></iconify-icon>
+        <iconify-icon icon="lucide:sun" class="iconify-icon light-icon"></iconify-icon>
+    </div>
+
+    <!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
+    <div class="main-container">
+        
+        <!-- Левая панель с обложкой -->
+        <div class="left-panel">
+            <!-- Фоновые декоративные элементы -->
+            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 border-2 rounded-full animate-pulse-glow pointer-events-none" style="border-color: color-mix(in srgb, var(--neon-purple) 20%, transparent); box-shadow: 0 0 100px color-mix(in srgb, var(--neon-purple) 20%, transparent);"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-80 h-80 border rounded-full animate-pulse-glow pointer-events-none" style="border-color: color-mix(in srgb, var(--neon-pink) 20%, transparent); box-shadow: 0 0 100px color-mix(in srgb, var(--neon-pink) 20%, transparent); animation-delay: -2s;"></div>
+            
+            <div class="cover-content">
+                <h1 class="cover-title">NEOSYNC</h1>
+                <p class="cover-subtitle">SECURE ACCESS PORTAL</p>
+                <p class="cover-description">
+                    Добро пожаловать в защищенную систему авторизации NeoSync. 
+                    Используйте передовые технологии шифрования для безопасного доступа к вашим данным.
+                </p>
+            </div>
+        </div>
+
+        <!-- Правая панель с формой -->
+        <div class="right-panel">
+            <!-- Фоновые декоративные элементы -->
+            <div class="absolute top-[-5%] right-[-5%] w-64 h-64 md:w-96 md:h-96 border-2 rounded-full animate-pulse-glow pointer-events-none" style="border-color: color-mix(in srgb, var(--neon-purple) 20%, transparent); box-shadow: 0 0 100px color-mix(in srgb, var(--neon-purple) 20%, transparent);"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-16 h-16 md:w-32 md:h-32 border rounded-full animate-pulse pointer-events-none" style="border-color: color-mix(in srgb, var(--neon-purple) 30%, transparent);"></div>
+
+            <!-- Карточка с формой -->
+            <div class="relative z-20 w-full max-w-md px-4">
+
+            <!-- Карточка входа/регистрации -->
+            <div class="auth-card p-6 md:p-8 border-glow-purple rounded-none">
+                
+                <!-- Переключатель между входом и регистрацией -->
+                <div class="flex border-b mb-6 md:mb-8 pb-2" style="border-color: var(--border-light);">
+                    <button type="button" id="loginTab" class="flex-1 text-center py-2 border-b-2 font-black text-sm md:text-base uppercase tracking-[0.2em] md:tracking-[0.3em]" style="color: var(--neon-purple); border-color: var(--neon-purple);">LOGIN</button>
+                    <button type="button" id="registerTab" class="flex-1 text-center py-2 font-black text-sm md:text-base uppercase tracking-[0.2em] md:tracking-[0.3em] transition-colors" style="color: var(--text-muted);">REGISTER</button>
+                </div>
+
+                <!-- Форма входа -->
+                <form id="loginForm" class="space-y-4 md:space-y-5">
+                    <!-- Поле email/username -->
+                    <div class="space-y-1">
+                        <label class="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-black flex items-center gap-1 md:gap-2" style="color: var(--text-muted);">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2" style="background-color: var(--neon-purple);"></span>
+                            USERNAME / EMAIL
+                        </label>
+                        <input type="text" id="loginEmail" name="email" placeholder="NODE_IDENTIFIER" class="auth-input px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm" required>
+                    </div>
+
+                    <!-- Поле пароль -->
+                    <div class="space-y-1">
+                        <label class="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-black flex items-center gap-1 md:gap-2" style="color: var(--text-muted);">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2" style="background-color: var(--neon-pink);"></span>
+                            PASSWORD
+                        </label>
+                        <input type="password" id="loginPassword" name="password" placeholder="••••••••" class="auth-input px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm" required>
+                    </div>
+
+                    <!-- Дополнительные опции -->
+                    <div class="flex justify-between items-center text-[8px] md:text-[10px] uppercase tracking-widest">
+                        <label class="flex items-center gap-1 cursor-pointer group">
+                            <div class="w-3 h-3 md:w-4 md:h-4 border flex items-center justify-center" style="border-color: var(--border-light);">
+                                <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-transparent group-hover:bg-[var(--neon-purple)]/50 transition-colors"></div>
+                            </div>
+                            <span class="transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">REMEMBER</span>
+                        </label>
+                        <a href="#" class="transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-muted)'">FORGOT KEY?</a>
+                    </div>
+
+                    <!-- Кнопка входа -->
+                    <button type="submit" class="group relative w-full px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 font-display text-sm md:text-base font-bold tracking-[0.2em] md:tracking-[0.3em] overflow-hidden transition-all" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px color-mix(in srgb, var(--neon-purple) 20%, transparent);">
+                        <div class="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300" style="background-color: var(--neon-purple);"></div>
+                        <span class="relative z-10 group-hover:text-white transition-colors">INITIALIZE SESSION</span>
+                    </button>
+
+                    <!-- Разделитель -->
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t" style="border-color: var(--border-light);"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs uppercase">
+                            <span class="px-2 bg-[var(--card-bg)]" style="color: var(--text-muted);">OR</span>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка Google -->
+                    <a href="/auth/google" class="google-btn px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm">
+                        <iconify-icon icon="flat-color-icons:google" class="text-lg md:text-xl"></iconify-icon>
+                        <span>Continue with Google</span>
+                    </a>
+
+                    <!-- Ссылка переключения между формами -->
+                    <div class="text-center pt-2">
+                        <span class="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em]" style="color: var(--text-muted);">
+                            Don't have an account? 
+                            <a href="#" id="switchToRegister" class="font-bold transition-colors" style="color: var(--neon-purple);" onmouseover="this.style.color='var(--neon-pink)'" onmouseout="this.style.color='var(--neon-purple)'">SIGN UP</a>
+                        </span>
+                    </div>
+                </form>
+
+                <!-- Форма регистрации (скрыта по умолчанию) -->
+                <form id="registerForm" class="space-y-4 md:space-y-5" style="display: none;">
+                    <!-- Поле имя -->
+                    <div class="space-y-1">
+                        <label class="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-black flex items-center gap-1 md:gap-2" style="color: var(--text-muted);">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2" style="background-color: var(--neon-purple);"></span>
+                            NAME
+                        </label>
+                        <input type="text" id="registerName" name="name" placeholder="YOUR NAME" class="auth-input px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm" required>
+                    </div>
+
+                    <!-- Поле email -->
+                    <div class="space-y-1">
+                        <label class="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-black flex items-center gap-1 md:gap-2" style="color: var(--text-muted);">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2" style="background-color: var(--neon-purple);"></span>
+                            EMAIL
+                        </label>
+                        <input type="email" id="registerEmail" name="email" placeholder="YOUR EMAIL" class="auth-input px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm" required>
+                    </div>
+
+                    <!-- Поле пароль -->
+                    <div class="space-y-1">
+                        <label class="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-black flex items-center gap-1 md:gap-2" style="color: var(--text-muted);">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2" style="background-color: var(--neon-pink);"></span>
+                            PASSWORD
+                        </label>
+                        <input type="password" id="registerPassword" name="password" placeholder="••••••••" class="auth-input px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm" required>
+                    </div>
+
+                    <!-- Кнопка регистрации -->
+                    <button type="submit" class="group relative w-full px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 font-display text-sm md:text-base font-bold tracking-[0.2em] md:tracking-[0.3em] overflow-hidden transition-all" style="border-color: var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 20px color-mix(in srgb, var(--neon-pink) 20%, transparent);">
+                        <div class="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300" style="background-color: var(--neon-pink);"></div>
+                        <span class="relative z-10 group-hover:text-white transition-colors">CREATE ACCOUNT</span>
+                    </button>
+
+                    <!-- Разделитель -->
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t" style="border-color: var(--border-light);"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs uppercase">
+                            <span class="px-2 bg-[var(--card-bg)]" style="color: var(--text-muted);">OR</span>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка Google -->
+                    <a href="/auth/google" class="google-btn px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm">
+                        <iconify-icon icon="flat-color-icons:google" class="text-lg md:text-xl"></iconify-icon>
+                        <span>Continue with Google</span>
+                    </a>
+
+                    <!-- Ссылка переключения между формами -->
+                    <div class="text-center pt-2">
+                        <span class="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em]" style="color: var(--text-muted);">
+                            Already have an account? 
+                            <a href="#" id="switchToLogin" class="font-bold transition-colors" style="color: var(--neon-purple);" onmouseover="this.style.color='var(--neon-pink)'" onmouseout="this.style.color='var(--neon-purple)'">SIGN IN</a>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Скрипт для переключения темы и форм -->
+<script>
+    (function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Проверяем сохраненную тему
+        const savedTheme = localStorage.getItem('neosync-theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('neosync-theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+        }
+
+        // Переключение между формами входа и регистрации
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+
+        function showLogin() {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginTab.style.color = 'var(--neon-purple)';
+            loginTab.style.borderColor = 'var(--neon-purple)';
+            loginTab.classList.add('border-b-2');
+            registerTab.style.color = 'var(--text-muted)';
+            registerTab.classList.remove('border-b-2');
+        }
+
+        function showRegister() {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerTab.style.color = 'var(--neon-pink)';
+            registerTab.style.borderColor = 'var(--neon-pink)';
+            registerTab.classList.add('border-b-2');
+            loginTab.style.color = 'var(--text-muted)';
+            loginTab.classList.remove('border-b-2');
+        }
+
+        if (loginTab) loginTab.addEventListener('click', showLogin);
+        if (registerTab) registerTab.addEventListener('click', showRegister);
+        if (switchToRegister) switchToRegister.addEventListener('click', (e) => { e.preventDefault(); showRegister(); });
+        if (switchToLogin) switchToLogin.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+    })();
+</script>
+
+<!-- Подключение auth.js -->
+<script src="/static/js/auth.js"></script>
+
+</body>
+</html>

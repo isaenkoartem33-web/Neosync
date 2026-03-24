@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoSync // Главная с переключателем тем</title>
+    
+    <!-- Tailwind + Iconify -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <style>
+        /* -------------------- ШРИФТЫ -------------------- */
+        @import url('https://fonts.googleapis.com/css2?family=Nippo:wght@400;500;700&family=Satoshi:wght@400;500;700&display=swap');
+
+        /* -------------------- КОРНЕВЫЕ ПЕРЕМЕННЫЕ (светлая тема) -------------------- */
+        :root {
+            --neon-pink: #FF006E;
+            --neon-purple: #7B2FDA;
+            --bg-primary: #F5F5F7;
+            --text-primary: #1A1A1A;
+            --card-bg: rgba(255,255,255,0.95);
+            --border-light: rgba(0,0,0,0.1);
+            --particle-color: rgba(0,0,0,0.03);
+            --scanline-color: rgba(123,47,218,0.03);
+            --header-bg: rgba(255,255,255,0.95);
+            --footer-bg: to-white;
+            --section-bg-1: rgba(0,0,0,0.02);
+            --section-bg-2: rgba(255,255,255,0.5);
+            --section-bg-3: rgba(255,255,255,0.3);
+            --text-muted: rgba(0,0,0,0.6);
+            --border-colored: #7B2FDA;
+        }
+
+        /* -------------------- ТЕМНАЯ ТЕМА -------------------- */
+        body.dark-theme {
+            --neon-pink: #FF006E;
+            --neon-purple: #AA00FF;
+            --bg-primary: #050505;
+            --text-primary: #FFFFFF;
+            --card-bg: rgba(15,15,15,0.95);
+            --border-light: rgba(255,255,255,0.1);
+            --particle-color: rgba(255,255,255,0.03);
+            --scanline-color: rgba(170,0,255,0.04);
+            --header-bg: rgba(0,0,0,0.95);
+            --footer-bg: to-black;
+            --section-bg-1: rgba(255,255,255,0.02);
+            --section-bg-2: rgba(0,0,0,0.4);
+            --section-bg-3: rgba(0,0,0,0.3);
+            --text-muted: rgba(255,255,255,0.6);
+            --border-colored: #AA00FF;
+        }
+
+        /* -------------------- БАЗОВЫЕ СТИЛИ -------------------- */
+        .font-display { font-family: 'Nippo', sans-serif; }
+        .font-body { font-family: 'Satoshi', sans-serif; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            overflow-x: hidden;
+            font-family: 'Satoshi', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* -------------------- ЧАСТИЦЫ -------------------- */
+        .bg-particles {
+            background-image: radial-gradient(circle, var(--particle-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* -------------------- СКАНИРУЮЩАЯ ЛИНИЯ -------------------- */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--scanline-color) 50%, transparent);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            animation: scanline-scroll 10s linear infinite;
+        }
+        @keyframes scanline-scroll {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* -------------------- ЭФФЕКТЫ СВЕЧЕНИЯ -------------------- */
+        .glow-purple { filter: drop-shadow(0 0 8px rgba(123,47,218,0.3)); }
+        .glow-pink { filter: drop-shadow(0 0 8px rgba(255,0,110,0.3)); }
+        .dark-theme .glow-purple { filter: drop-shadow(0 0 12px rgba(170,0,255,0.6)); }
+        .dark-theme .glow-pink { filter: drop-shadow(0 0 12px rgba(255,0,110,0.6)); }
+
+        .text-glow-purple {
+            text-shadow: 0 0 10px rgba(123,47,218,0.3);
+        }
+        .dark-theme .text-glow-purple {
+            text-shadow: 0 0 15px rgba(170,0,255,0.9), 0 0 30px rgba(170,0,255,0.5);
+        }
+        
+        .text-glow-pink {
+            text-shadow: 0 0 10px rgba(255,0,110,0.3);
+        }
+        .dark-theme .text-glow-pink {
+            text-shadow: 0 0 15px rgba(255,0,110,0.9), 0 0 30px rgba(255,0,110,0.5);
+        }
+
+        /* -------------------- СВЕЧЕНИЕ ГРАНИЦ -------------------- */
+        .border-glow-purple {
+            border: 1px solid var(--neon-purple);
+        }
+        .border-glow-pink {
+            border: 1px solid var(--neon-pink);
+        }
+
+        /* -------------------- КЛЮЧЕВЫЕ КАДРЫ -------------------- */
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-rotate-slow { animation: rotate-slow 20s linear infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0,0); }
+            50% { transform: translate(-10px,-20px); }
+        }
+        .animate-float { animation: float 8s ease-in-out infinite; }
+
+        @keyframes bar-grow {
+            0% { height: 10%; }
+            100% { height: 100%; }
+        }
+        .bar-animation { animation: bar-grow 2s ease-in-out infinite alternate; }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        /* -------------------- КАРТОЧКИ -------------------- */
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .dark-theme .feature-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        /* -------------------- ПЕРЕКЛЮЧАТЕЛЬ ТЕМ -------------------- */
+        .theme-switch {
+            position: relative;
+            width: 56px;
+            height: 28px;
+            background: rgba(123,47,218,0.15);
+            border: 1px solid var(--neon-purple);
+            border-radius: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
+        .theme-switch:hover { box-shadow: 0 0 12px var(--neon-purple); }
+        .theme-switch .switch-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .dark-theme .theme-switch .switch-thumb { transform: translateX(28px); }
+        .theme-switch .switch-icon {
+            position: absolute;
+            top: 5px;
+            font-size: 16px;
+            pointer-events: none;
+        }
+        .theme-switch .light-icon { right: 6px; color: #FFD700; }
+        .theme-switch .dark-icon  { left: 6px;  color: #fff; opacity: 0.5; }
+        .dark-theme .theme-switch .light-icon { opacity: 0.4; }
+        .dark-theme .theme-switch .dark-icon  { opacity: 1; }
+
+        /* -------------------- СТИЛИ ДЛЯ ЭЛЕМЕНТОВ -------------------- */
+        header {
+            background: var(--header-bg) !important;
+            border-bottom-color: var(--border-light) !important;
+        }
+
+        footer {
+            background: linear-gradient(to bottom, transparent, var(--footer-bg)) !important;
+            border-top-color: var(--border-light) !important;
+        }
+
+        #operational-modules {
+            background: var(--section-bg-1);
+        }
+
+        #core-capabilities {
+            background: var(--section-bg-2);
+            border-top-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+        }
+
+        #operational-metrics {
+            background: var(--section-bg-3);
+            border-top-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+        }
+
+        /* Стили для розовой линии */
+        .pink-line {
+            background-color: #FF006E;
+            height: 2px;
+        }
+
+        /* Стили для иконок */
+        .social-icon {
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.25);
+        }
+        .dark-theme .social-icon:hover {
+            filter: drop-shadow(0 0 12px currentColor);
+        }
+
+        /* Стили для списка расходов */
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: bold;
+        }
+        .expense-item .rank {
+            color: var(--neon-purple);
+            font-size: 18px;
+            font-weight: 900;
+            min-width: 30px;
+        }
+        .expense-item .name {
+            flex: 1;
+            color: var(--text-primary);
+        }
+        .expense-item .cost {
+            color: #FF006E;
+            font-weight: 900;
+        }
+        .expense-item .category {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-left: 12px;
+        }
+
+        /* Стили для карточек подписок */
+        .subscription-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .subscription-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .subscription-card h3 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .subscription-card p {
+            color: var(--text-primary);
+            margin: 6px 0;
+        }
+        .subscription-card .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+        }
+        .subscription-card button {
+            padding: 8px 16px;
+            border: 1px solid var(--neon-purple);
+            background: transparent;
+            color: var(--neon-purple);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .subscription-card button:hover {
+            background: var(--neon-purple);
+            color: white;
+        }
+
+        /* Стили для табов */
+        .tab-btn {
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover {
+            color: var(--neon-purple) !important;
+        }
+        .tab-btn.active {
+            color: var(--neon-purple) !important;
+            border-bottom-color: var(--neon-purple) !important;
+        }
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen relative overflow-hidden bg-particles">
+    
+    <!-- Сканирующая линия -->
+    <div class="scanline"></div>
+
+    <!-- ========== ШАПКА ========== -->
+    <header class="fixed w-full z-[60] flex items-center justify-between px-6 md:px-12 py-3 border-b backdrop-blur-xl">
+        <!-- Логотип + бренд -->
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <div class="w-8 h-8 border-2" style="border-color: var(--neon-purple); transform: rotate(45deg); box-shadow: 0 0 10px color-mix(in srgb, var(--neon-purple) 20%, transparent);"></div>
+                <iconify-icon icon="lucide:zap" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-base" style="color: var(--neon-purple);"></iconify-icon>
+            </div>
+            <h1 class="font-display text-xl tracking-[0.2em] font-bold" style="color: var(--text-primary);">NEOSYNC</h1>
+        </div>
+
+        <!-- Десктопная навигация + переключатель -->
+        <div class="flex items-center">
+            <nav class="hidden lg:flex items-center gap-6">
+                <a href="/" class="text-sm uppercase tracking-widest font-bold transition-colors" style="color: var(--text-primary);" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'">Главная</a>
+                <a href="/profile" class="text-sm uppercase tracking-widest font-bold transition-colors" style="color: var(--text-primary);" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'">Профиль</a>
+                <button id="logoutBtn" class="px-5 py-2 border-2 text-sm uppercase font-black tracking-widest transition-all hover:text-white" style="border-color: #FF006E; color: #FF006E;" onmouseover="this.style.backgroundColor='#FF006E'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#FF006E'">Выход</button>
+            </nav>
+            <div class="theme-switch hidden lg:block" id="themeToggle">
+                <div class="switch-thumb"></div>
+                <iconify-icon icon="lucide:moon" class="switch-icon dark-icon"></iconify-icon>
+                <iconify-icon icon="lucide:sun" class="switch-icon light-icon"></iconify-icon>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== ТАБЫ НАВИГАЦИИ ========== -->
+    <section class="relative px-6 md:px-12 pt-16 pb-0">
+        <div class="flex gap-1 border-b" style="border-color: var(--border-light);">
+            <button class="tab-btn active px-5 py-2.5 font-bold uppercase text-sm tracking-wider transition-all" data-tab="subscriptions" style="color: var(--neon-purple); border-bottom: 2px solid var(--neon-purple);">Подписки</button>
+            <button class="tab-btn px-5 py-2.5 font-bold uppercase text-sm tracking-wider transition-all" data-tab="analytics" style="color: var(--text-muted);">Аналитика</button>
+            <button class="tab-btn px-5 py-2.5 font-bold uppercase text-sm tracking-wider transition-all" data-tab="about" style="color: var(--text-muted);">О сервисе</button>
+        </div>
+    </section>
+
+    <!-- ========== ТАБ: ПОДПИСКИ ========== -->
+    <section id="tab-subscriptions" class="tab-content relative px-6 md:px-12 py-4">
+        <div class="relative z-20">
+            <!-- Кнопки импорта -->
+            <div id="gmailImportContainer" class="mb-4">
+                <div class="flex gap-2 mb-2 overflow-x-auto pb-1">
+                    <button id="gmailImportBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 font-bold uppercase text-sm tracking-wider transition-all hover:bg-purple-600 hover:text-white whitespace-nowrap flex-shrink-0" style="border-color: var(--neon-purple); color: var(--neon-purple);">
+                        <iconify-icon icon="lucide:mail"></iconify-icon>Gmail
+                    </button>
+                    <button id="yandexImportBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 font-bold uppercase text-sm tracking-wider transition-all hover:bg-purple-600 hover:text-white whitespace-nowrap flex-shrink-0" style="border-color: var(--neon-purple); color: var(--neon-purple);">
+                        <iconify-icon icon="simple-icons:yandex"></iconify-icon>Yandex
+                    </button>
+                    <button id="mailruImportBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 font-bold uppercase text-sm tracking-wider transition-all hover:bg-purple-600 hover:text-white whitespace-nowrap flex-shrink-0" style="border-color: var(--neon-purple); color: var(--neon-purple);">
+                        <iconify-icon icon="simple-icons:maildotru"></iconify-icon>Mail.ru
+                    </button>
+                    <button id="refreshAllBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 font-bold uppercase text-sm tracking-wider transition-all hover:bg-pink-600 hover:text-white whitespace-nowrap flex-shrink-0" style="border-color: #FF006E; color: #FF006E;">
+                        <iconify-icon icon="lucide:refresh-cw"></iconify-icon>Обновить из почты
+                    </button>
+                    <button id="addSubscriptionBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 font-bold uppercase text-sm tracking-wider transition-all hover:bg-pink-600 hover:text-white whitespace-nowrap flex-shrink-0" style="border-color: #FF006E; color: #FF006E;">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>Добавить вручную
+                    </button>
+                </div>
+                <div>
+                    <p id="refreshStatus" class="text-sm font-bold" style="color: var(--text-muted);"></p>
+                    <p id="importStatus" class="text-sm font-bold" style="color: var(--text-muted);"></p>
+                    <p id="yandexStatus" class="text-sm font-bold" style="color: var(--text-muted);"></p>
+                    <p id="mailruStatus" class="text-sm font-bold" style="color: var(--text-muted);"></p>
+                </div>
+            </div>
+
+            <!-- Контейнер для списка подписок -->
+            <div id="subscriptionsList"></div>
+        </div>
+    </section>
+
+    <!-- ========== ТАБ: АНАЛИТИКА ========== -->
+    <section id="tab-analytics" class="tab-content hidden relative px-6 md:px-12 py-4">
+        <div class="mb-4">
+            <h2 class="font-display text-3xl font-black uppercase tracking-tighter mb-1" style="color: var(--text-primary);">Аналитика</h2>
+            <div class="h-1 w-24" style="background-color: var(--neon-purple);"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+            <div class="feature-card p-4 border-glow-purple text-center">
+                <h3 class="text-sm uppercase tracking-wider font-black mb-2" style="color: var(--text-muted);">Расходы в месяц</h3>
+                <p id="totalMonthly" class="text-3xl font-display font-black" style="color: var(--neon-purple);">0 ₽</p>
+            </div>
+            <div class="feature-card p-4 border-glow-pink text-center">
+                <h3 class="text-sm uppercase tracking-wider font-black mb-2" style="color: var(--text-muted);">Расходы в год</h3>
+                <p id="totalYearly" class="text-3xl font-display font-black" style="color: #FF006E;">0 ₽</p>
+            </div>
+            <div class="feature-card p-4 border-glow-purple text-center">
+                <h3 class="text-sm uppercase tracking-wider font-black mb-2" style="color: var(--text-muted);">Подписок</h3>
+                <p id="subscriptionCount" class="text-3xl font-display font-black" style="color: var(--neon-purple);">0</p>
+            </div>
+            <div class="feature-card p-4 border-glow-pink text-center">
+                <h3 class="text-sm uppercase tracking-wider font-black mb-2" style="color: var(--text-muted);">Средняя стоимость</h3>
+                <p id="averageMonthly" class="text-3xl font-display font-black" style="color: #FF006E;">0 ₽</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="feature-card p-5 border-glow-purple">
+                <h3 class="font-display text-lg font-bold uppercase tracking-wider mb-4" style="color: var(--text-primary);">Расходы по категориям</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="feature-card p-5 border-glow-pink">
+                <h3 class="font-display text-lg font-bold uppercase tracking-wider mb-4" style="color: var(--text-primary);">Расходы по времени</h3>
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="feature-card p-5 border-glow-pink">
+            <h3 class="font-display text-lg font-bold uppercase tracking-wider mb-4" style="color: var(--text-primary);">Топ расходов</h3>
+            <div id="topExpensesList" class="space-y-3"></div>
+        </div>
+    </section>
+
+    <!-- ========== ТАБ: О СЕРВИСЕ ========== -->
+    <section id="tab-about" class="tab-content hidden relative px-6 md:px-12 py-4">
+        <div class="mb-4">
+            <h2 class="font-display text-3xl font-black uppercase tracking-tighter mb-1" style="color: var(--text-primary);">О сервисе</h2>
+            <div class="h-1 w-24" style="background-color: var(--neon-purple);"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="feature-card p-6 border-glow-purple">
+                <iconify-icon icon="lucide:credit-card" class="text-4xl mb-4" style="color: var(--neon-purple);"></iconify-icon>
+                <h3 class="font-display text-xl font-black uppercase mb-3" style="color: var(--text-primary);">Управление подписками</h3>
+                <p style="color: var(--text-muted);">Добавляйте подписки вручную или импортируйте автоматически из Gmail, Yandex и Mail.ru. Отслеживайте даты списания и не пропускайте платежи.</p>
+            </div>
+            <div class="feature-card p-6 border-glow-pink">
+                <iconify-icon icon="lucide:bar-chart-2" class="text-4xl mb-4" style="color: #FF006E;"></iconify-icon>
+                <h3 class="font-display text-xl font-black uppercase mb-3" style="color: var(--text-primary);">Аналитика расходов</h3>
+                <p style="color: var(--text-muted);">Смотрите сколько тратите в месяц и год, разбивку по категориям и динамику расходов на графиках.</p>
+            </div>
+            <div class="feature-card p-6 border-glow-purple">
+                <iconify-icon icon="lucide:mail" class="text-4xl mb-4" style="color: var(--neon-purple);"></iconify-icon>
+                <h3 class="font-display text-xl font-black uppercase mb-3" style="color: var(--text-primary);">Импорт из почты</h3>
+                <p style="color: var(--text-muted);">Подключите Gmail или Yandex — сервис автоматически найдёт письма о подписках и предложит их добавить.</p>
+            </div>
+            <div class="feature-card p-6 border-glow-pink">
+                <iconify-icon icon="lucide:link" class="text-4xl mb-4" style="color: #FF006E;"></iconify-icon>
+                <h3 class="font-display text-xl font-black uppercase mb-3" style="color: var(--text-primary);">Быстрая оплата</h3>
+                <p style="color: var(--text-muted);">Добавьте ссылку на страницу оплаты к каждой подписке — кнопка "Оплатить" откроет её в один клик прямо с карточки.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== ПОДВАЛ ========== -->
+    <footer class="px-8 md:px-24 pt-32 pb-20 border-t bg-gradient-to-b from-transparent">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
+            <!-- левый блок: бренд + соцсети -->
+            <div class="lg:col-span-5 space-y-10">
+                <div class="flex items-center gap-6">
+                    <div class="w-12 h-12 border-2 rotate-45 flex items-center justify-center" style="border-color: #FF006E; box-shadow: 0 0 15px rgba(255,0,110,0.2);">
+                        <iconify-icon icon="lucide:shield" class="text-2xl -rotate-45" style="color: #FF006E;"></iconify-icon>
+                    </div>
+                    <h2 class="font-display text-3xl uppercase tracking-[0.2em] font-black" style="color: var(--text-primary);">NEOSYNC CORE</h2>
+                </div>
+                <p class="text-base uppercase tracking-[0.3em] font-bold leading-relaxed max-w-md" style="color: var(--text-primary); opacity: 0.8;">Управляй подписками, контролируй расходы, не теряй деньги на забытых сервисах.</p>
+                <div class="flex gap-10">
+                    <a href="#" class="social-icon" style="color: var(--text-primary);" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'"><iconify-icon icon="brandico:twitter-bird" class="text-4xl"></iconify-icon></a>
+                    <a href="#" class="social-icon" style="color: var(--text-primary);" onmouseover="this.style.color='#FF006E'" onmouseout="this.style.color='var(--text-primary)'"><iconify-icon icon="lucide:github" class="text-4xl"></iconify-icon></a>
+                    <a href="#" class="social-icon" style="color: var(--text-primary);" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'"><iconify-icon icon="lucide:send" class="text-4xl"></iconify-icon></a>
+                </div>
+            </div>
+
+            <!-- правый блок: ссылки + копирайт -->
+            <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
+                <div class="space-y-6">
+                    <h4 class="text-base uppercase tracking-[0.6em] font-black flex items-center gap-2" style="color: var(--neon-purple);"><span class="w-2 h-2" style="background-color: var(--neon-purple);"></span>Система</h4>
+                    <ul class="space-y-4 text-base uppercase tracking-[0.2em] font-bold" style="color: var(--text-primary);">
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'">Документация</a></li>
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'">API</a></li>
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='var(--neon-purple)'" onmouseout="this.style.color='var(--text-primary)'">Обновления</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <h4 class="text-base uppercase tracking-[0.6em] font-black flex items-center gap-2" style="color: #FF006E;"><span class="w-2 h-2" style="background-color: #FF006E;"></span>Правовое</h4>
+                    <ul class="space-y-4 text-base uppercase tracking-[0.2em] font-bold" style="color: var(--text-primary);">
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='#FF006E'" onmouseout="this.style.color='var(--text-primary)'">Конфиденциальность</a></li>
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='#FF006E'" onmouseout="this.style.color='var(--text-primary)'">Условия</a></li>
+                        <li><a href="#" style="opacity: 0.8;" onmouseover="this.style.color='#FF006E'" onmouseout="this.style.color='var(--text-primary)'">Безопасность</a></li>
+                    </ul>
+                </div>
+                <div class="flex flex-col justify-end items-end border-l pl-10" style="border-color: var(--border-light);">
+                    <div class="text-right">
+                    <p class="text-[14px] font-black uppercase tracking-widest italic" style="color: var(--text-muted);">&copy; 2024 NEOSYNC. Все права защищены.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- нижний разделитель + статусная строка -->
+        <div class="h-[2px] w-full opacity-40" style="background: linear-gradient(to right, transparent, var(--neon-purple), #FF006E);"></div>
+        <div class="mt-12 flex flex-wrap justify-between items-center gap-8 text-[14px] font-black uppercase tracking-widest" style="color: var(--text-muted);">
+            <span>Задержка: 14мс</span>
+            <span>Шифрование: AES-256</span>
+            <span>Статус: активен</span>
+        </div>
+    </footer>
+
+</div>
+
+<!-- Скрипт для переключения темы -->
+<script>
+    (function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Проверяем сохраненную тему
+        const savedTheme = localStorage.getItem('neosync-theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                
+                // Сохраняем выбор
+                if (body.classList.contains('dark-theme')) {
+                    localStorage.setItem('neosync-theme', 'dark');
+                } else {
+                    localStorage.setItem('neosync-theme', 'light');
+                }
+            });
+        }
+    })();
+</script>
+
+<!-- Скрипт для переключения табов -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        console.log('Tab buttons found:', tabBtns.length);
+        console.log('Tab contents found:', tabContents.length);
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.getAttribute('data-tab');
+                console.log('Switching to tab:', tabName);
+                
+                // Убираем активный класс со всех кнопок
+                tabBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.color = 'var(--text-muted)';
+                    b.style.borderBottom = 'none';
+                });
+                
+                // Добавляем активный класс к нажатой кнопке
+                btn.classList.add('active');
+                btn.style.color = 'var(--neon-purple)';
+                btn.style.borderBottom = '2px solid var(--neon-purple)';
+                
+                // Скрываем все табы
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Показываем нужный таб
+                const activeTab = document.getElementById(`tab-${tabName}`);
+                console.log('Active tab element:', activeTab);
+                if (activeTab) {
+                    activeTab.classList.remove('hidden');
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Chart.js для графиков -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Email Import Modal -->
+<div id="emailImportModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 pt-20 pb-4 overflow-y-auto" style="backdrop-filter: blur(10px);">
+    <div class="feature-card max-w-md w-full mx-4 my-auto p-4 sm:p-6 md:p-8 border-glow-purple max-h-[calc(100vh-6rem)]" style="overflow-y: auto;">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-display text-2xl font-black uppercase tracking-tighter" style="color: var(--text-primary);">
+                <iconify-icon id="emailModalIcon" icon="simple-icons:yandex" class="inline-block mr-2"></iconify-icon>
+                <span id="emailModalTitle">Импорт из Yandex</span>
+            </h3>
+            <button onclick="closeEmailImportModal()" class="text-2xl hover:text-pink-500 transition-colors" style="color: var(--text-muted);">
+                <iconify-icon icon="lucide:x"></iconify-icon>
+            </button>
+        </div>
+        
+        <!-- OAuth Login for Yandex -->
+        <div id="yandexOauthSection" class="text-center">
+            <div class="p-8 border-2 mb-6" style="border-color: var(--neon-purple); background-color: rgba(123,47,218,0.05);">
+                <iconify-icon icon="lucide:sparkles" class="text-5xl mb-4" style="color: var(--neon-purple);"></iconify-icon>
+                <p class="text-lg font-bold mb-2" style="color: var(--text-primary);">
+                    Быстрый и безопасный вход
+                </p>
+                <p class="text-sm font-bold mb-6" style="color: var(--text-muted);">
+                    Войдите через Yandex ID для автоматического импорта подписок
+                </p>
+                <button 
+                    type="button"
+                    id="oauthLoginBtn"
+                    class="w-full px-8 py-4 border-2 font-bold uppercase tracking-wider transition-all hover:bg-purple-600 hover:text-white"
+                    style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 20px rgba(123,47,218,0.3);"
+                >
+                    <iconify-icon icon="simple-icons:yandex" class="inline-block mr-2 text-xl"></iconify-icon>
+                    Войти через Yandex
+                </button>
+            </div>
+            
+            <div class="p-4 border-2" style="border-color: rgba(123,47,218,0.3); background-color: rgba(123,47,218,0.05);">
+                <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">
+                    <iconify-icon icon="lucide:shield-check" class="inline-block mr-1"></iconify-icon>
+                    Безопасно и конфиденциально
+                </p>
+                <p class="text-xs" style="color: var(--text-muted);">
+                    Мы не храним ваши пароли. Авторизация через официальный Yandex OAuth.
+                </p>
+            </div>
+            
+            <button 
+                type="button"
+                onclick="closeEmailImportModal()"
+                class="mt-6 px-6 py-3 border-2 font-bold uppercase tracking-wider transition-all hover:bg-gray-600 hover:text-white"
+                style="border-color: var(--text-muted); color: var(--text-muted);"
+            >
+                Отмена
+            </button>
+        </div>
+        
+        <!-- IMAP Login for Mail.ru -->
+        <form id="emailImportForm" class="space-y-6 hidden">
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+                    Email адрес
+                </label>
+                <input 
+                    type="email" 
+                    id="emailInput" 
+                    placeholder="user@mail.ru"
+                    required
+                    class="w-full px-4 py-3 border-2 font-bold transition-all focus:outline-none focus:border-purple-500"
+                    style="background-color: var(--bg-primary); border-color: var(--neon-purple); color: var(--text-primary);"
+                />
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+                    Пароль приложения
+                </label>
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="••••••••••••••••"
+                    required
+                    class="w-full px-4 py-3 border-2 font-bold transition-all focus:outline-none focus:border-purple-500"
+                    style="background-color: var(--bg-primary); border-color: var(--neon-purple); color: var(--text-primary);"
+                />
+                <p class="mt-2 text-xs font-bold" style="color: var(--text-muted);">
+                    <iconify-icon icon="lucide:info" class="inline-block mr-1"></iconify-icon>
+                    Используйте пароль приложения, не основной пароль
+                </p>
+            </div>
+            
+            <div class="p-4 border-2" style="border-color: var(--neon-purple); background-color: rgba(123,47,218,0.1);">
+                <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">
+                    <iconify-icon icon="lucide:shield-check" class="inline-block mr-1"></iconify-icon>
+                    Как создать пароль приложения:
+                </p>
+                <a id="passwordLink" href="#" target="_blank" class="text-xs font-bold hover:underline" style="color: var(--neon-purple);">
+                    Открыть инструкцию →
+                </a>
+            </div>
+            
+            <div class="flex gap-4">
+                <button 
+                    type="submit" 
+                    class="flex-1 px-6 py-3 border-2 font-bold uppercase tracking-wider transition-all hover:bg-purple-600 hover:text-white"
+                    style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 15px rgba(123,47,218,0.2);"
+                >
+                    <iconify-icon icon="lucide:download" class="inline-block mr-2"></iconify-icon>
+                    Импортировать
+                </button>
+                <button 
+                    type="button"
+                    onclick="closeEmailImportModal()"
+                    class="px-6 py-3 border-2 font-bold uppercase tracking-wider transition-all hover:bg-gray-600 hover:text-white"
+                    style="border-color: var(--text-muted); color: var(--text-muted);"
+                >
+                    Отмена
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manual Subscription Modal -->
+<div id="manualSubscriptionModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50" style="backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 5rem 1rem 1rem 1rem;">
+    <div class="feature-card w-full max-w-md p-3 sm:p-4 border-glow-pink" style="max-height: calc(100vh - 7rem); overflow-y: auto;">
+        <div class="flex justify-between items-center mb-2 sm:mb-3">
+            <h3 id="modalTitle" class="font-display text-sm sm:text-base font-black uppercase tracking-tighter" style="color: var(--text-primary);">
+                <iconify-icon id="modalIcon" icon="lucide:plus" class="inline-block mr-1 text-base sm:text-lg" style="color: #FF006E;"></iconify-icon>
+                <span id="modalTitleText">Добавить подписку</span>
+            </h3>
+            <button onclick="window.manualSubscriptionForm?.hideForm()" class="text-base sm:text-lg hover:text-pink-500 transition-colors" style="color: var(--text-muted);">
+                <iconify-icon icon="lucide:x"></iconify-icon>
+            </button>
+        </div>
+        
+        <form id="manualSubscriptionForm" class="space-y-2 sm:space-y-3">
+            <!-- Название подписки -->
+            <div>
+                <label for="subscriptionName" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Название подписки *
+                </label>
+                <input 
+                    type="text" 
+                    id="subscriptionName" 
+                    name="name"
+                    placeholder="Netflix, Spotify, Adobe..."
+                    required
+                    minlength="1"
+                    maxlength="255"
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                />
+                <div id="nameError" class="mt-0.5 text-xs font-bold hidden" style="color: #FF006E;"></div>
+            </div>
+
+            <!-- Стоимость и валюта -->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label for="subscriptionCost" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                        Стоимость *
+                    </label>
+                    <input 
+                        type="number" 
+                        id="subscriptionCost" 
+                        name="cost"
+                        placeholder="999"
+                        required
+                        min="0.01"
+                        step="0.01"
+                        class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                        style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                    />
+                    <div id="costError" class="mt-0.5 text-xs font-bold hidden" style="color: #FF006E;"></div>
+                </div>
+                <div>
+                    <label for="subscriptionCurrency" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                        Валюта *
+                    </label>
+                    <select 
+                        id="subscriptionCurrency" 
+                        name="currency"
+                        required
+                        class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                        style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                    >
+                        <option value="RUB">₽ RUB</option>
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Период оплаты -->
+            <div>
+                <label for="subscriptionPeriod" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Период оплаты *
+                </label>
+                <select 
+                    id="subscriptionPeriod" 
+                    name="billing_period"
+                    required
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                >
+                    <option value="weekly">Еженедельно</option>
+                    <option value="monthly" selected>Ежемесячно</option>
+                    <option value="quarterly">Ежеквартально</option>
+                    <option value="yearly">Ежегодно</option>
+                </select>
+            </div>
+
+            <!-- Дата начала -->
+            <div>
+                <label for="subscriptionStartDate" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Дата начала *
+                </label>
+                <input 
+                    type="date" 
+                    id="subscriptionStartDate" 
+                    name="start_date"
+                    required
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                />
+                <div id="dateError" class="mt-0.5 text-xs font-bold hidden" style="color: #FF006E;"></div>
+            </div>
+
+            <!-- Категория -->
+            <div>
+                <label for="subscriptionCategory" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Категория *
+                </label>
+                <select 
+                    id="subscriptionCategory" 
+                    name="category"
+                    required
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                >
+                    <option value="">Выберите категорию</option>
+                    <option value="Развлечения">Развлечения</option>
+                    <option value="Музыка">Музыка</option>
+                    <option value="Видео">Видео</option>
+                    <option value="Игры">Игры</option>
+                    <option value="Образование">Образование</option>
+                    <option value="Работа">Работа</option>
+                    <option value="Здоровье">Здоровье</option>
+                    <option value="Финансы">Финансы</option>
+                    <option value="Покупки">Покупки</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+
+            <!-- Ссылка на оплату -->
+            <div>
+                <label for="subscriptionPaymentUrl" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Ссылка на оплату (опционально)
+                </label>
+                <input 
+                    type="url" 
+                    id="subscriptionPaymentUrl" 
+                    name="payment_url"
+                    placeholder="https://netflix.com/subscribe"
+                    maxlength="500"
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                />
+                <p class="mt-0.5 text-xs font-bold" style="color: var(--text-muted);">
+                    Ссылка на страницу оплаты сервиса
+                </p>
+            </div>
+
+            <!-- Заметки -->
+            <div>
+                <label for="subscriptionNotes" class="block text-xs font-bold uppercase tracking-wider mb-0.5" style="color: var(--text-primary);">
+                    Заметки
+                </label>
+                <textarea 
+                    id="subscriptionNotes" 
+                    name="notes"
+                    placeholder="Дополнительная информация о подписке..."
+                    rows="2"
+                    maxlength="500"
+                    class="w-full px-2 py-1 sm:px-2.5 sm:py-1.5 border-2 font-bold transition-all focus:outline-none focus:border-pink-500 resize-none text-xs"
+                    style="background-color: var(--bg-primary); border-color: #FF006E; color: var(--text-primary);"
+                ></textarea>
+                <p class="mt-0.5 text-xs font-bold" style="color: var(--text-muted);">
+                    Максимум 500 символов
+                </p>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="flex flex-col sm:flex-row gap-1.5 sm:gap-2 pt-1.5 sm:pt-2">
+                <button 
+                    type="submit" 
+                    id="submitSubscriptionBtn"
+                    class="flex-1 px-3 py-1.5 sm:px-3.5 sm:py-2 border-2 font-bold uppercase tracking-wider transition-all hover:bg-pink-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                    style="border-color: #FF006E; color: #FF006E; box-shadow: 0 0 15px rgba(255,0,110,0.2);"
+                    disabled
+                >
+                    <iconify-icon icon="lucide:plus" class="inline-block mr-1 text-sm"></iconify-icon>
+                    <span id="submitBtnText">Добавить</span>
+                </button>
+                <button 
+                    type="button"
+                    onclick="window.manualSubscriptionForm?.hideForm()"
+                    class="px-3 py-1.5 sm:px-3.5 sm:py-2 border-2 font-bold uppercase tracking-wider transition-all hover:bg-gray-600 hover:text-white text-xs"
+                    style="border-color: var(--text-muted); color: var(--text-muted);"
+                >
+                    Отмена
+                </button>
+            </div>
+        </form>
+
+        <!-- Индикатор загрузки -->
+        <div id="loadingIndicator" class="hidden text-center py-3">
+            <iconify-icon icon="lucide:loader-2" class="text-xl sm:text-2xl animate-spin mb-1.5" style="color: #FF006E;"></iconify-icon>
+            <p class="font-bold uppercase tracking-wider text-xs" style="color: var(--text-primary);">
+                Добавление...
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- View Subscription Modal -->
+<div id="viewSubscriptionModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50" style="backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 5rem 1rem 1rem 1rem;">
+    <div class="feature-card w-full max-w-lg p-6 border-glow-purple" style="max-height: calc(100vh - 7rem); overflow-y: auto;">
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="font-display text-xl font-black uppercase tracking-tighter" style="color: var(--text-primary);">
+                <iconify-icon icon="lucide:info" class="inline-block mr-2" style="color: var(--neon-purple);"></iconify-icon>
+                Детали подписки
+            </h3>
+            <button onclick="closeViewModal()" class="text-xl hover:text-pink-500 transition-colors" style="color: var(--text-muted);">
+                <iconify-icon icon="lucide:x"></iconify-icon>
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center justify-between mb-1">
+                <span id="viewSubName" class="font-display text-2xl font-black" style="color: var(--text-primary);"></span>
+                <span id="viewSubCategory" class="text-xs font-black uppercase px-2 py-1" style="background-color: var(--neon-purple); color: white;"></span>
+            </div>
+            <div class="flex items-baseline gap-2 mt-2">
+                <span id="viewSubCost" class="text-3xl font-black font-display" style="color: #FF006E;"></span>
+                <span id="viewSubPeriod" class="text-sm font-bold" style="color: var(--text-muted);"></span>
+            </div>
+        </div>
+
+        <div class="space-y-3 py-4 border-t border-b mb-5" style="border-color: var(--border-light);">
+            <div class="flex justify-between text-sm">
+                <span class="font-bold uppercase tracking-wider" style="color: var(--text-muted);">Дата начала</span>
+                <span id="viewSubStart" class="font-bold" style="color: var(--text-primary);"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="font-bold uppercase tracking-wider" style="color: var(--text-muted);">Следующее списание</span>
+                <span id="viewSubNext" class="font-bold" style="color: var(--neon-purple);"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="font-bold uppercase tracking-wider" style="color: var(--text-muted);">Статус</span>
+                <span id="viewSubStatus" class="font-bold" style="color: #10B981;"></span>
+            </div>
+            <div class="text-sm">
+                <span class="font-bold uppercase tracking-wider block mb-1" style="color: var(--text-muted);">Заметки</span>
+                <span id="viewSubNotes" class="font-bold" style="color: var(--text-primary);"></span>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <a id="viewSubPayBtn" href="#" target="_blank" rel="noopener noreferrer"
+               class="flex-1 inline-flex items-center justify-center px-4 py-3 border-2 font-bold uppercase text-sm transition-all hover:bg-green-600 hover:text-white hover:border-green-600 hidden"
+               style="border-color: #10B981; color: #10B981; text-decoration: none;">
+                <iconify-icon icon="lucide:credit-card" class="mr-2"></iconify-icon>Оплатить
+            </a>
+            <button id="viewSubEditBtn"
+                class="flex-1 px-4 py-3 border-2 font-bold uppercase text-sm transition-all hover:bg-purple-600 hover:text-white"
+                style="border-color: var(--neon-purple); color: var(--neon-purple);">
+                <iconify-icon icon="lucide:edit-2" class="mr-2"></iconify-icon>Редактировать
+            </button>
+            <button onclick="closeViewModal()"
+                class="px-4 py-3 border-2 font-bold uppercase text-sm transition-all"
+                style="border-color: var(--text-muted); color: var(--text-muted);">
+                Закрыть
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение JavaScript файлов -->
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/subscriptions.js"></script>
+<script src="/static/js/analytics.js"></script>
+
+</body>
+</html>
+
+

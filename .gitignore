@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+instance/
+*.db
+*.sqlite3
+venv/
+.venv/
+.pytest_cache/
+
+# Flutter
+rpza_sredi_navoza/.dart_tool/
+rpza_sredi_navoza/.flutter-plugins
+rpza_sredi_navoza/.flutter-plugins-dependencies
+rpza_sredi_navoza/build/
+rpza_sredi_navoza/.packages
+rpza_sredi_navoza/pubspec.lock
+
+# Техномарт — чужой проект, не пушим
+Техномарт_окус_с_измен_регистр/
+
+# IDE
+.vscode/
+.idea/
+.kiro/
+
+# OS
+.DS_Store
+Thumbs.db
