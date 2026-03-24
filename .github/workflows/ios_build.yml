@@ -21,17 +21,31 @@ jobs:
         run: flutter pub get
         working-directory: rpza_sredi_navoza
 
-      - name: Build Flutter iOS (no codesign)
-        run: flutter build ios --release --no-codesign --no-tree-shake-icons
+      - name: Generate Flutter iOS files
+        run: flutter build ios --release --no-codesign || true
         working-directory: rpza_sredi_navoza
-        env:
-          CODE_SIGNING_ALLOWED: NO
-          CODE_SIGNING_REQUIRED: NO
+        continue-on-error: true
+
+      - name: Build with xcodebuild (no signing)
+        run: |
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            -derivedDataPath build/DerivedData \
+            build
+        working-directory: rpza_sredi_navoza
 
       - name: Create IPA
         run: |
+          APP_PATH=$(find build/DerivedData -name "Runner.app" -not -path "*/simulator/*" | head -1)
           mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
+          cp -r "$APP_PATH" Payload/
           zip -r NeoSync.ipa Payload
         working-directory: rpza_sredi_navoza
 
