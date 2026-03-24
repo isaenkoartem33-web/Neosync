@@ -3,7 +3,7 @@ name: Build iOS
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch: # можно запустить вручную
+  workflow_dispatch:
 
 jobs:
   build-ios:
@@ -21,18 +21,21 @@ jobs:
         run: flutter pub get
         working-directory: rpza_sredi_navoza
 
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+      - name: Build Flutter iOS (no codesign)
+        run: flutter build ios --release --no-codesign --no-tree-shake-icons
         working-directory: rpza_sredi_navoza
+        env:
+          CODE_SIGNING_ALLOWED: NO
+          CODE_SIGNING_REQUIRED: NO
 
-      - name: Create IPA structure
+      - name: Create IPA
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r NeoSync.ipa Payload
         working-directory: rpza_sredi_navoza
 
-      - name: Upload IPA artifact
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: NeoSync-iOS
