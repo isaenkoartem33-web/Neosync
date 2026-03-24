@@ -2,6 +2,13 @@
 
 Приложение для отслеживания платных подписок. Есть веб-версия и мобильное приложение на Flutter.
 
+## Скачать
+
+Готовые сборки лежат в папке [`releases/`](./releases):
+
+- `releases/NeoSync.apk` — Android
+- `releases/NeoSync.ipa` — iOS (установка через Sideloadly или AltStore)
+
 ## Стек
 
 - **Бэкенд:** Python, Flask, SQLAlchemy, SQLite
@@ -36,6 +43,11 @@ pip install -r requirements.txt
 ```
 
 2. Создай файл `.env` в корне (скопируй из `.env.example`) и заполни своими данными
+
+SECRET_KEY=любой-секретный-ключ
+EMAIL_USER=твой-gmail@gmail.com
+EMAIL_PASSWORD=пароль-приложения-gmail
+```
 
 3. Запусти Flask:
 ```bash
